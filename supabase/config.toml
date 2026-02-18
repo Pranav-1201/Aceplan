@@ -1,0 +1,22 @@
+project_id = "txilzegfacoqhrylwmzr"
+
+[functions.parse-timetable]
+verify_jwt = false
+
+[functions.send-otp]
+verify_jwt = false
+
+[functions.verify-otp]
+verify_jwt = false
+
+[functions.generate-ai-notes]
+verify_jwt = false
+
+[functions.refine-ai-notes]
+verify_jwt = false
+
+[functions.generate-ai-quiz]
+verify_jwt = false
+
+[functions.grade-ai-quiz]
+verify_jwt = false

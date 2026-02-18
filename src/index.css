@@ -1,0 +1,199 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 142 76% 36%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221 83% 53%;
+
+    --radius: 0.75rem;
+    
+    --gradient-primary: linear-gradient(135deg, hsl(221 83% 53%), hsl(250 95% 63%));
+    --gradient-accent: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 46%));
+    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 8%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 8%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 221 83% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 217 32% 17%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 32% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 142 76% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 217 32% 17%;
+    --input: 217 32% 17%;
+    --ring: 221 83% 60%;
+    
+    --gradient-primary: linear-gradient(135deg, hsl(221 83% 60%), hsl(250 95% 70%));
+    --gradient-accent: linear-gradient(135deg, hsl(142 76% 45%), hsl(142 76% 55%));
+    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --sidebar-background: 222 47% 8%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 221 83% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217 32% 17%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 32% 17%;
+    --sidebar-ring: 221 83% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .bg-grid-pattern {
+    background-image: 
+      linear-gradient(to right, hsl(var(--border)) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border)) 1px, transparent 1px);
+    background-size: 4rem 4rem;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animation-delay-500 {
+    animation-delay: 500ms;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  /* Calendar day with both study session and exam - 50/50 split */
+  .calendar-day-both {
+    position: relative;
+    background: linear-gradient(
+      to right,
+      hsl(var(--primary) / 0.4) 0%,
+      hsl(var(--primary) / 0.4) 50%,
+      hsl(var(--destructive) / 0.4) 50%,
+      hsl(var(--destructive) / 0.4) 100%
+    );
+    ring: 2px;
+    --tw-ring-color: hsl(var(--destructive) / 0.5);
+    box-shadow: 0 0 0 2px hsl(var(--destructive) / 0.5);
+  }
+  
+  .calendar-day-both:hover {
+    background: linear-gradient(
+      to right,
+      hsl(var(--primary) / 0.5) 0%,
+      hsl(var(--primary) / 0.5) 50%,
+      hsl(var(--destructive) / 0.5) 50%,
+      hsl(var(--destructive) / 0.5) 100%
+    );
+  }
+}
+
+/* TipTap Editor Styles */
+.tiptap {
+  outline: none;
+  min-height: 400px;
+  padding: 1rem;
+}
+.tiptap h1 { font-size: 2em; font-weight: 700; margin-top: 1em; margin-bottom: 0.5em; }
+.tiptap h2 { font-size: 1.5em; font-weight: 600; margin-top: 1em; margin-bottom: 0.5em; }
+.tiptap h3 { font-size: 1.25em; font-weight: 600; margin-top: 0.75em; margin-bottom: 0.5em; }
+.tiptap p { margin-bottom: 0.5em; }
+.tiptap ul, .tiptap ol { padding-left: 1.5em; margin-bottom: 0.5em; }
+.tiptap li { margin-bottom: 0.25em; }
+.tiptap blockquote { border-left: 3px solid hsl(var(--primary)); padding-left: 1em; margin: 0.5em 0; color: hsl(var(--muted-foreground)); }
+.tiptap code { background: hsl(var(--muted)); padding: 0.2em 0.4em; border-radius: 0.25em; font-size: 0.875em; }
+.tiptap pre { background: hsl(var(--muted)); padding: 1em; border-radius: 0.5em; overflow-x: auto; margin: 0.5em 0; }
+.tiptap pre code { background: none; padding: 0; }
+.tiptap mark { background-color: hsl(var(--primary) / 0.2); padding: 0.1em 0.2em; border-radius: 0.15em; }
+.tiptap table { border-collapse: collapse; width: 100%; margin: 0.5em 0; }
+.tiptap th, .tiptap td { border: 1px solid hsl(var(--border)); padding: 0.5em; }
+.tiptap th { background: hsl(var(--muted)); font-weight: 600; }
+.tiptap img { max-width: 100%; height: auto; border-radius: 0.5em; }
+.tiptap hr { border: none; border-top: 1px solid hsl(var(--border)); margin: 1em 0; }
+
+.tiptap-preview h1 { font-size: 2em; font-weight: 700; margin-top: 1em; margin-bottom: 0.5em; }
+.tiptap-preview h2 { font-size: 1.5em; font-weight: 600; margin-top: 1em; margin-bottom: 0.5em; }
+.tiptap-preview h3 { font-size: 1.25em; font-weight: 600; margin-top: 0.75em; margin-bottom: 0.5em; }
+.tiptap-preview p { margin-bottom: 0.5em; }
+.tiptap-preview ul, .tiptap-preview ol { padding-left: 1.5em; margin-bottom: 0.5em; }
+.tiptap-preview li { margin-bottom: 0.25em; }
+.tiptap-preview table { border-collapse: collapse; width: 100%; margin: 0.5em 0; }
+.tiptap-preview th, .tiptap-preview td { border: 1px solid hsl(var(--border)); padding: 0.5em; }
+.tiptap-preview th { background: hsl(var(--muted)); font-weight: 600; }
+.tiptap-preview strong { font-weight: 700; }

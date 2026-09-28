@@ -19,12 +19,16 @@ sign-in needs no email.
 Consequence: the auth rewrite is Phase B, not Phase A.
 Decided by: project owner, 2026-09-29. Recommended by: claude-sonnet-5-5.
 
-## D3: `no-explicit-any` is a warning, not an error, with a ceiling
-Why: 101 of the 104 lint errors were this one rule, so CI could not go green without either
-hours of type work or disabling lint. The rule is `warn` and `npm run lint:ci` fails if the
-warning count rises above the recorded ceiling. Removing the `any`s is Phase D work.
-Loosening on purpose: this is the only recorded relaxation of a quality gate.
-Decided by: claude-sonnet-5-5 under the owner's "implement Phase A" instruction, 2026-09-29.
+## D3: PROPOSED, NOT APPLIED: `no-explicit-any` as a warning with a ceiling
+Why proposed: 101 of the 104 original lint errors were this one rule (3 were fixed in code),
+so the lint job cannot go green without either fixing 101 `any` usages or relaxing the rule.
+The proposal was `warn` plus a `--max-warnings` ceiling so the count cannot grow.
+Status: the project's config-protection hook refused the edit to `eslint.config.js` ("fix the
+source code instead of weakening the config"). It was not worked around. Until the owner
+chooses, the CI `lint` job is a separate job and stays red. Options: (a) owner temporarily
+disables that hook so the change can land, or (b) the `any` usages are fixed in source (the
+frontend quality phase).
+Decided by: open, waiting for the owner. Raised by: claude-sonnet-5-5, 2026-09-29.
 
 ## D4: CI has two jobs, and the database replay is checked locally with a throwaway PGlite
 Why: the machine has no Docker or Postgres. The `db` job replays every migration against a

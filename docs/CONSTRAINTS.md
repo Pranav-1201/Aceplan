@@ -19,7 +19,7 @@ Short on purpose. "Allow" means allow within these lines.
 - Do not change `verify_jwt` in `supabase/config.toml`, CORS, or row level security policies
   as a side effect of another task. Those are security changes, one task each.
 - Never loosen a test or a lint gate to make a change pass. A failing gate is the finding.
-  (The one recorded loosening is `docs/DECISIONS.md` D3.)
+  (A proposed lint relaxation is recorded as `docs/DECISIONS.md` D3 and is not applied.)
 - Do not hand-edit `src/integrations/supabase/types.ts`; regenerate it from the database.
 - Do not read secrets out of `.env` into logs, docs or chat.
 

@@ -743,14 +743,14 @@ Built on **shadcn/ui** (Radix UI primitives):
 ### Frontend
 - Built with Vite (optimized production bundle)
 - Hosted on CDN for global distribution
-- Automatic code splitting via React Router
+- Single JavaScript bundle today (no route-level code splitting yet; planned)
 
 ### Backend 
 - **Database:** PostgreSQL with connection pooling
 - **Auth:** Built-in email/password + OAuth providers
 - **Storage:** `study-materials` bucket (public) for avatars, PDFs, resumes, certificates
 - **Edge Functions:** Deno-based serverless functions, auto-deployed on code change
-- **Secrets:** `RESEND_API_KEY`, `ACEPLAN_GROQ_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY` managed securely
+- **Secrets:** `RESEND_API_KEY`, `GROQ_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY` managed securely
 
 ### Environment Variables
 | Variable | Purpose |
@@ -759,7 +759,7 @@ Built on **shadcn/ui** (Radix UI primitives):
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Anon key for client (client-side) |
 | `SUPABASE_SERVICE_ROLE_KEY` | Admin key (edge functions only) |
 | `RESEND_API_KEY` | Email sending service |
-| `ACEPLAN_GROQ_API_KEY` | AI gateway for timetable parsing |
+| `GROQ_API_KEY` | Groq API key used by the AI edge functions (set as a Supabase secret) |
 
 ---
 

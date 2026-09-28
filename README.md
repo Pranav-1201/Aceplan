@@ -243,7 +243,29 @@ npm install
 npm run dev
 ```
 
-Create a `.env` file and configure your Supabase project keys before running.
+Use Node 24 (`.nvmrc`). Create a `.env` file in the project root with your Supabase
+project values (Supabase dashboard, Project Settings, API):
+
+```
+VITE_SUPABASE_URL=https://<project-ref>.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=<anon key>
+VITE_SUPABASE_PROJECT_ID=<project-ref>
+```
+
+The anon key is public by design. Edge function secrets such as `GROQ_API_KEY` are set
+on the Supabase project, not in `.env`. Full backend setup: [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md).
+
+## Checks
+
+```bash
+npm run lint:ci    # eslint, warnings may not grow past the recorded ceiling
+npm run typecheck  # tsc on the app project
+npm test           # vitest
+npm run build      # production build
+```
+
+These four run in CI on every pull request and push to `main`, together with a
+from-scratch replay of the database migrations (`supabase/ci/replay.sh`).
 
 ---
 

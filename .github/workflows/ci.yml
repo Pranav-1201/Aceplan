@@ -1,0 +1,61 @@
+name: CI
+
+# Runs on every pull request and on pushes to main. A branch that is neither main nor a pull
+# request does not run CI, so open a pull request to get a run.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # Typecheck, unit tests and production build.
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  # Separate job so lint results are visible on their own. Lint currently fails on the
+  # no-explicit-any rule (101 errors, docs/DECISIONS.md D3); that is a known, tracked gap.
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+
+  # Replays every migration on an empty Postgres against stubbed Supabase auth/storage schemas
+  # and checks that row level security is on for every public table.
+  db:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: localhost
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash supabase/ci/replay.sh

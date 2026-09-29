@@ -35,6 +35,10 @@ Groq API (AI functions only)
 ## Routes (`src/App.tsx`)
 `/` landing, `/auth`, `/dashboard`, `/profile`, `/statistics`, `/timetable`, `/exams`,
 `/my-subjects`, `/ai-notes`, `/quiz`, `/subject/:id`, `*` not found.
+Every page is loaded on demand (`React.lazy`), so a first visit downloads only the code for the
+page it opens. All routes except `/`, `/auth` and the not-found page sit under
+`src/components/ProtectedRoute.tsx`, which sends signed-out visitors to `/auth`. The pages still
+do their own session checks as well; removing those is a later cleanup.
 
 ## Data model (tables in `src/integrations/supabase/types.ts`)
 ai_notes, ai_usage, certificates, exam_subjects, exams, folders, profiles, quiz_attempts,

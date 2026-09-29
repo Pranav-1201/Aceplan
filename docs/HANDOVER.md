@@ -56,6 +56,17 @@ the "AI gateway" error wording.
 | Grader trusts the quiz key sent by the browser | Deliberately NOT done. The only person it can help is the student cheating their own practice score, so a server-side quiz store is not worth its cost now. Revisit if scores are ever shared or ranked |
 | JSON mode for quiz and grading replies | NOT done. A malformed reply now returns a clear retry message instead of crashing; Groq's JSON mode would not fit the grader's array reply and was not verified |
 
+## Phase D (frontend and UX): status
+Trace: `docs/work/phase-d-frontend.md`.
+
+| Item | State |
+|---|---|
+| Bundle split by route | Done, committed. Main entry chunk 1,821.88 kB to 487.74 kB (524.30 to 146.88 kB gzip); heavy pieces load only on their pages |
+| One protected-route wrapper | Done, committed (`ProtectedRoute`, 5 tests, 6 planted bugs caught). `AINotes` and `Quiz` are now covered too |
+| Dead share-image tags | Removed (D11). `@aceplan` Twitter handle left as is: confirm it is yours |
+| Split `Exams.tsx`, remove the 101 `any` types, TanStack Query, accessibility pass | NOT done: need the running app to verify safely; see the trace file |
+| Hosting fallback file | Not added (D11): only needed if the host is Netlify |
+
 Function settings to set on the new project (all optional except the key): `GROQ_API_KEY`,
 `ALLOWED_ORIGINS` (comma-separated site origins), `AI_DAILY_LIMIT` (default 50),
 `GROQ_TEXT_MODEL`, `GROQ_VISION_MODEL`. Check Groq's current model list: the vision default is a
@@ -68,9 +79,11 @@ best guess and was not verified.
 4. `.env.example`: permission settings deny `.env*`, so none was created (D6).
 
 ## Next
-Phase D (frontend and UX): split the 1.8 MB bundle by route, one `ProtectedRoute` instead of about
-37 scattered session checks, split the 1390-line `Exams.tsx`, remove the `any` types, accessibility.
-The detailed audit roadmap and the plans are kept privately, outside this repo.
+Phase E (deploy and operations). Almost all of it needs the owner: create the new Supabase project
+and the Google sign-in client (`docs/SUPABASE_SETUP.md`), choose a host, decide on pushing so CI
+can run, then do the live checks listed under Phase B and drill one rollback. After the project
+exists, come back for the Phase D items that need a running app. The detailed audit roadmap and
+the plans are kept privately, outside this repo.
 
 ## Watch out for
 - A first-touch gate hook denies the first write of every new file until facts are stated; state

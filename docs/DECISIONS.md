@@ -77,3 +77,13 @@ to paste the text. Real PDF and Word support needs a text-extraction library (a 
 dependency, for example pdf.js for PDFs); that is a decision for the owner, because PDFs are the
 common student format, and it is not done.
 Decided by: claude-sonnet-5-5, 2026-09-29.
+
+## D11: No hosting fallback file is added; the share image is removed until one exists
+Why: single-page apps need unknown paths to serve `index.html`. As far as I know Cloudflare Pages
+does this by default when there is no `404.html`, while Netlify needs `public/_redirects` with
+`/* /index.html 200` (general knowledge, not checked this run). The file is not added because on
+Cloudflare Pages it can trigger a redirect-loop warning. Add it only if the host turns out to be
+Netlify. The `og:image` and `twitter:image` tags pointed at a banner that was never added to
+`public/`, so they were removed and the card type set to `summary`; the `@aceplan` Twitter handle
+was left untouched because its owner could not be verified.
+Decided by: claude-sonnet-5-5, 2026-09-29.

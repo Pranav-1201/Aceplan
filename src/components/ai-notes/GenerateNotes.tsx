@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/collapsible";
 import { toast } from "sonner";
 import { authHeaders } from "@/lib/functionsAuth";
+import { isReadableTextFile, looksLikeText } from "@/lib/fileText";
 import { renderMarkdown } from "@/lib/safeHtml";
 import {
   ArrowRight,
@@ -123,23 +124,30 @@ const GenerateNotes = ({
     setIsExtracting(true);
     setExtractedText("");
 
+    // Only plain-text formats can be read in the browser. PDF, Word and PowerPoint files are
+    // binary: reading them as text used to send garbage to the AI as if it were the material.
     let allText = "";
+    const unreadable: string[] = [];
     for (const file of files) {
-      if (file.type === "text/plain" || file.name.endsWith(".txt") || file.name.endsWith(".md")) {
-        allText += await file.text() + "\n\n";
-      } else {
-        // For PDF/DOCX/PPT - read as text if possible, otherwise inform user
-        try {
-          const text = await file.text();
-          if (text && text.length > 50) {
-            allText += `## ${file.name}\n${text}\n\n`;
-          } else {
-            allText += `## ${file.name}\n[File content could not be fully extracted. For best results, copy and paste the text content directly.]\n\n`;
-          }
-        } catch {
-          allText += `## ${file.name}\n[File content could not be extracted. Please paste the text content manually.]\n\n`;
-        }
+      if (!isReadableTextFile(file.name)) {
+        unreadable.push(file.name);
+        continue;
       }
+      try {
+        const text = await file.text();
+        if (looksLikeText(text)) {
+          allText += text + "\n\n";
+        } else {
+          unreadable.push(file.name);
+        }
+      } catch {
+        unreadable.push(file.name);
+      }
+    }
+    if (unreadable.length > 0) {
+      toast.error(
+        `Can't read ${unreadable.join(", ")}. Upload .txt, .md or .csv files, or paste the text instead.`,
+      );
     }
     setExtractedText(allText);
     setIsExtracting(false);
@@ -369,11 +377,11 @@ const GenerateNotes = ({
                 <div className="border-2 border-dashed rounded-lg p-6 text-center">
                   <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                   <p className="text-sm text-muted-foreground mb-3">
-                    Upload text files (.txt, .md) for best results
+                    Upload text files (.txt, .md, .csv). For PDF or Word files, paste the text instead.
                   </p>
                   <Input
                     type="file"
-                    accept=".txt,.md,.pdf,.docx,.pptx,.doc,.ppt"
+                    accept=".txt,.md,.markdown,.csv"
                     multiple
                     onChange={handleFileChange}
                     className="max-w-xs mx-auto"

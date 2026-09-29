@@ -7,6 +7,7 @@ import {
   isText,
   jsonResponse,
   parseAllowedOrigins,
+  parseLimit,
 } from "./http";
 
 describe("bearerToken", () => {
@@ -60,6 +61,19 @@ describe("corsHeadersFor", () => {
   it("always varies on Origin so caches do not mix responses", () => {
     expect(corsHeadersFor("https://a.app", ["https://a.app"]).Vary).toBe("Origin");
     expect(corsHeadersFor("https://evil.example", ["https://a.app"]).Vary).toBe("Origin");
+  });
+});
+
+describe("parseLimit", () => {
+  it("reads a positive whole number", () => {
+    expect(parseLimit("25", 50)).toBe(25);
+    expect(parseLimit(" 7 ", 50)).toBe(7);
+  });
+
+  it("falls back for unset, blank, non-numeric, fractional, zero and negative values", () => {
+    for (const raw of [undefined, null, "", "  ", "abc", "2.5", "0", "-3"]) {
+      expect(parseLimit(raw, 50), String(raw)).toBe(50);
+    }
   });
 });
 

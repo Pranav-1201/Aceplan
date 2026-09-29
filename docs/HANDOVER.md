@@ -1,7 +1,7 @@
 # Handover
 
 Where things stand right now. Rewrite this at the end of every session.
-Last updated: 2026-09-29, model claude-sonnet-5-5.
+Last updated: 2026-09-30, model claude-sonnet-5-5.
 
 ## Where the private files are
 The owner's hard rule: everything made for this project that is not code lives in
@@ -15,17 +15,23 @@ Semester planner for students; AI notes and quizzes are opt-in. Authentication m
 Supabase built-in Auth with Google sign-in plus email and password (D1, D2).
 
 ## Current branch
-`phase-b/security`, branched from `phase-a/foundation` (both local only, NOT pushed; the GitHub
-repo is public and pushing needs the owner's go-ahead). `main` is untouched at 0bb5a65.
+`phase-b/security`, branched from `phase-a/foundation`. PUSHED on 2026-09-30 and open as pull
+request #1 into `main` (NOT merged; the repo is public). `main` is untouched at 0bb5a65. The
+owner's rule: do not merge until the edge functions have been tried against a live Supabase project.
+
+First real CI run (2026-09-30, run 36630859816): `checks` PASS (typecheck, tests, build on Linux,
+Node 24), `db` PASS (the real `supabase/ci/replay.sh` on Postgres 15: all migrations applied, the
+quota test printed `quota checks passed`, 14 tables), `lint` FAIL as expected: 103 problems, 89
+errors (all `@typescript-eslint/no-explicit-any`), 14 warnings. Measured the same locally.
 
 ## Phase A (foundation): status
 | Task | State |
 |---|---|
 | 1 Repo hygiene and docs | Done, committed |
-| 2 Lint gate | Partly done: 3 of 104 errors fixed and committed; the other 101 are `no-explicit-any`. The relaxation was refused by the config-protection hook, see D3. OWNER DECISION NEEDED |
+| 2 Lint gate | Partly done: 3 of 104 errors fixed early; the rest are `no-explicit-any` (101 then, 89 now after code was removed and rewritten). The rule relaxation was refused by the config-protection hook (D3). Owner decided 2026-09-30 (D12): FIX them in source, last, after a live project exists |
 | 3 Typecheck script and unit tests | Done, committed. 7 tests in 2 files pass; 4 planted bugs were all caught |
-| 4 Migration replay harness | Done and verified in a throwaway PGlite (no Docker or Postgres on this machine): 13 migrations apply on an empty database, 14 public tables, matching `types.ts`. Two planted failures were caught. The real `psql` script (`replay.sh`) has not run yet, only its PGlite equivalent; CI will be its first run |
-| 5 CI workflow | Written (`.github/workflows/ci.yml`), NOT yet run anywhere. It only runs after a push or pull request, which the owner has not approved |
+| 4 Migration replay harness | Done. Verified locally in a throwaway PGlite and then for real in CI on 2026-09-30: `replay.sh` on Postgres 15 passed |
+| 5 CI workflow | Done and run: pull request #1 gave `checks` pass, `db` pass, `lint` fail (known, see above) |
 | 6 Supabase setup runbook | Written (`docs/SUPABASE_SETUP.md`). Creating the new project and the Google OAuth client is blocked on the owner's accounts |
 
 All of the above is committed on the branch except whatever `git status --short` shows.
@@ -47,8 +53,9 @@ Follow-ups Phase B leaves open:
   REGENERATED from the new project (never hand-edited); see `docs/SUPABASE_SETUP.md`.
 - `src/components/ui/input-otp.tsx` and the `input-otp` package are now unused; removing them is a
   separate cleanup.
-- The public-storage question (avatars, resumes and certificates share one public bucket) is not
-  done; it needs a decision because it changes stored file paths.
+- Public storage (avatars, resumes and certificates share one public bucket): the owner decided on
+  2026-09-30 to split it NOW (avatars public; resumes and certificates private, opened by
+  short-lived links). NOT done yet; it is the next code task (D12).
 - Live checks once a project exists: anon-key request to an AI function gets 401, signed-in works,
   the 51st call in a day gets 429, Google sign-in returns to `/dashboard`.
 
@@ -59,7 +66,7 @@ the "AI gateway" error wording.
 
 | Item | State |
 |---|---|
-| Notes uploader read PDF/Word as text | Fixed and committed: plain-text files only, binary refused with a message (`src/lib/fileText.ts`, 9 tests, 8 planted bugs caught after one gap was closed). Real PDF/Word support is an owner decision (D10) |
+| Notes uploader read PDF/Word as text | Fixed and committed: plain-text files only, binary refused with a message (`src/lib/fileText.ts`, 9 tests, 8 planted bugs caught after one gap was closed). The owner decided on 2026-09-30 to add real PDF and Word support (D12); NOT done yet, it is a code task after the storage split |
 | Grader trusts the quiz key sent by the browser | Deliberately NOT done. The only person it can help is the student cheating their own practice score, so a server-side quiz store is not worth its cost now. Revisit if scores are ever shared or ranked |
 | JSON mode for quiz and grading replies | NOT done. A malformed reply now returns a clear retry message instead of crashing; Groq's JSON mode would not fit the grader's array reply and was not verified |
 
@@ -70,8 +77,8 @@ Trace: `docs/work/phase-d-frontend.md`.
 |---|---|
 | Bundle split by route | Done, committed. Main entry chunk 1,821.88 kB to 487.74 kB (524.30 to 146.88 kB gzip); heavy pieces load only on their pages |
 | One protected-route wrapper | Done, committed (`ProtectedRoute`, 5 tests, 6 planted bugs caught). `AINotes` and `Quiz` are now covered too |
-| Dead share-image tags | Removed (D11). `@aceplan` Twitter handle left as is: confirm it is yours |
-| Split `Exams.tsx`, remove the 101 `any` types, TanStack Query, accessibility pass | NOT done: need the running app to verify safely; see the trace file |
+| Dead share-image tags | Removed (D11). The `@aceplan` Twitter handle was removed on the owner's instruction (2026-09-30) |
+| Split `Exams.tsx`, remove the 89 remaining `any` types, TanStack Query, accessibility pass | NOT done: need the running app to verify safely; see the trace file. The `any` fixes are the owner's chosen lint route (D12) and come last |
 | Hosting fallback file | Not added (D11): only needed if the host is Netlify |
 
 Function settings to set on the new project (all optional except the key): `GROQ_API_KEY`,
@@ -80,10 +87,16 @@ Function settings to set on the new project (all optional except the key): `GROQ
 best guess and was not verified.
 
 ## Blocked on the owner
-1. New Supabase project (needs their account), then Google OAuth client (needs Google Cloud).
-2. Choice for D3 (lint): disable the config-protection hook once, or fix the 101 `any` usages.
-3. Permission to push a branch so CI can run.
-4. `.env.example`: permission settings deny `.env*`, so none was created (D6).
+1. New Supabase project (needs their account), then Google OAuth client (needs Google Cloud), a
+   Groq API key, and setting the function secrets. Step-by-step: the Word guide in the project
+   folder, and `docs/SUPABASE_SETUP.md`.
+2. Trying the app for real, and the three live security checks (`docs/TEST_CHECKLIST.md`).
+3. Reviewing and merging pull request #1 after that.
+4. Cloudflare Pages account and deploy; weekly backups; one restore drill and one rollback drill.
+5. `.env.example`: permission settings deny `.env*`, so none was created (D6). Optional.
+
+Decided by the owner on 2026-09-30 (D12) and NOT blocking: lint route, push, storage split, PDF and
+Word support, host, Twitter handle, where docs live.
 
 ## Phase E (deploy and operations): status
 Only the documentation could be done without the owner's accounts: `docs/DEPLOYMENT.md` (host
@@ -96,11 +109,11 @@ Groq free limits, the Supabase inactivity-pause threshold, host build settings. 
 deployed, no rollback or restore drill has been done, and no alerting exists.
 
 ## Next
-Phase E needs the owner. Almost all of it: create the new Supabase project
-and the Google sign-in client (`docs/SUPABASE_SETUP.md`), choose a host, decide on pushing so CI
-can run, then do the live checks listed under Phase B and drill one rollback. After the project
-exists, come back for the Phase D items that need a running app. The detailed audit roadmap and
-the plans are kept privately, outside this repo.
+Code work the owner has approved, in this order (D12): 1) the private-storage split, 2) PDF and Word
+reading for AI notes (two new dependencies; record their names in DECISIONS.md), 3) the `any` fixes,
+last and only once a live project exists so they can be tried. Everything else waits on the owner's
+accounts (see "Blocked on the owner"). The detailed audit roadmap and the plans are kept privately
+in the project folder, outside this repo.
 
 ## Watch out for
 - A first-touch gate hook denies the first write of every new file until facts are stated; state

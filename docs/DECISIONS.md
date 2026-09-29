@@ -87,4 +87,20 @@ I believe it can trigger a redirect-loop warning there (not checked). Add it onl
 turns out to be Netlify. The `og:image` and `twitter:image` tags pointed at a banner that was never added to
 `public/`, so they were removed and the card type set to `summary`; the `@aceplan` Twitter handle
 was left untouched because its owner could not be verified.
+Update 2026-09-30: the owner chose to remove the `@aceplan` handle, and it was removed.
 Decided by: claude-sonnet-5-5, 2026-09-29.
+
+## D12: Owner decisions of 2026-09-30
+- Lint (D3): fix the 101 `any` types in source rather than relax the rule. Done LAST, after a
+  Supabase project exists and the app can be run, so the edits can be tried for real.
+- GitHub: push the branch and open a pull request (not merged) so CI runs for the first time.
+- Private storage: split it now. Avatars stay public; resumes and certificates become private and
+  are opened by short-lived links. Cheapest while the new project has no files.
+- PDF and Word: add reading of both for AI notes. This supersedes the "text-only" position in D10
+  and approves two new runtime dependencies (a PDF reader and a Word reader), to be recorded here
+  by name when chosen.
+- The code's own documents stay in the repo; everything else goes to the project folder (rule in
+  `CLAUDE.md`).
+- Host: Cloudflare Pages (D11 stands; no routing file needed).
+- Order of work: push first, then the storage split and PDF/Word, then the `any` fixes.
+Decided by: project owner, 2026-09-30.

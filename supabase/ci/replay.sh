@@ -14,5 +14,8 @@ for migration in "$supabase_dir"/migrations/*.sql; do
   psql -v ON_ERROR_STOP=1 -q -f "$migration"
 done
 
+echo "running quota checks"
+psql -v ON_ERROR_STOP=1 -f "$supabase_dir/ci/98_quota_test.sql"
+
 echo "running checks"
 psql -v ON_ERROR_STOP=1 -f "$supabase_dir/ci/99_assert.sql"

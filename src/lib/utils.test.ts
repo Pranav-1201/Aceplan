@@ -3,7 +3,8 @@ import { cn } from "@/lib/utils";
 
 describe("cn", () => {
   it("joins class names and drops falsy values", () => {
-    expect(cn("a", false && "b", "c")).toBe("a c");
+    const disabled = false;
+    expect(cn("a", disabled && "b", "c")).toBe("a c");
   });
 
   it("lets a later Tailwind utility override an earlier conflicting one", () => {

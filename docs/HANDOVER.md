@@ -29,11 +29,21 @@ All of the above is committed on the branch except whatever `git status --short`
 | 1 Restrict the OTP table | Done, committed. Replay assertion "no allow-everything policy" failed before the migration and passes after |
 | 2 Auth rewrite | Done, committed. Sign-in uses only Supabase built-in email/password and Google (`src/lib/auth.ts`, 13 tests, 9 planted bugs caught). The custom OTP screens are gone from `Auth.tsx`; signup now saves the full name |
 | 3 Shared function helpers | Done, committed (`supabase/functions/_shared/`, 12 tests, 10 planted bugs caught) |
-| 4 Harden the five AI functions | Code written, NOT yet committed or verified. Each function now: requires a real signed-in user, size-checks input, applies a daily quota, returns generic errors, uses a CORS allowlist. Edge functions cannot be run on this machine (no Deno, no project), so this is checked by reading and by the helper tests only |
-| 4b Client sends the user token | Code written (`src/lib/functionsAuth.ts` + test, four call sites), NOT yet committed or verified |
-| 5 Daily AI quota | Migration and behaviour test done and verified in PGlite (3 broken variants caught). Its commit was interrupted by a tool failure: check `git status` |
-| 6 Sanitized Markdown | Code written (`src/lib/safeHtml.ts` + test, three call sites), NOT yet verified: needs `npm i dompurify` first (the shell was unavailable) |
-| 7 Retire the OTP functions | Not started: delete `send-otp` and `verify-otp`, their config entries, and add a migration dropping `email_otps` |
+| 4 Harden the five AI functions | Done, committed. Each function requires a real signed-in user, size-checks input, applies a daily quota, returns generic errors, uses a CORS allowlist. The functions themselves have NOT been run (no Deno, no project on this machine): they are verified by reading, by typecheck of the client, and by the helper tests only |
+| 4b Client sends the user token | Done, committed (`src/lib/functionsAuth.ts` + 2 tests, four call sites) |
+| 5 Daily AI quota | Done, committed. Migration plus behaviour test verified in PGlite; 3 broken variants caught |
+| 6 Sanitized Markdown | Done, committed (`src/lib/safeHtml.ts` + 4 tests, three call sites, new dependency `dompurify`, D8) |
+| 7 Retire the OTP functions | Done: `send-otp` and `verify-otp` deleted, config entries removed, migration `20260929000200_drop_email_otps.sql` added. Replay: 16 migrations, 14 tables, no `email_otps` |
+
+Follow-ups Phase B leaves open:
+- `src/integrations/supabase/types.ts` still lists `email_otps` and lacks `ai_usage`. It must be
+  REGENERATED from the new project (never hand-edited); see `docs/SUPABASE_SETUP.md`.
+- `src/components/ui/input-otp.tsx` and the `input-otp` package are now unused; removing them is a
+  separate cleanup.
+- The public-storage question (avatars, resumes and certificates share one public bucket) is not
+  done; it needs a decision because it changes stored file paths.
+- Live checks once a project exists: anon-key request to an AI function gets 401, signed-in works,
+  the 51st call in a day gets 429, Google sign-in returns to `/dashboard`.
 
 Function settings to set on the new project (all optional except the key): `GROQ_API_KEY`,
 `ALLOWED_ORIGINS` (comma-separated site origins), `AI_DAILY_LIMIT` (default 50),
@@ -47,9 +57,8 @@ best guess and was not verified.
 4. `.env.example`: permission settings deny `.env*`, so none was created (D6).
 
 ## Next
-Finish Phase B: `npm i dompurify`, run typecheck, tests and lint, commit Tasks 4 to 6, then Task 7.
-Then Phase C (correctness). The detailed audit roadmap and the plans are kept privately, outside
-this repo.
+Phase C (correctness). The detailed audit roadmap and the plans are kept privately, outside this
+repo.
 
 ## Watch out for
 - A first-touch gate hook denies the first write of every new file until facts are stated; state

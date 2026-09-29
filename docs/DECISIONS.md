@@ -47,3 +47,24 @@ Why: the owner's permission settings deny access to `.env*` files, and that is r
 rather than worked around. The variables are documented in `README.md` instead. If the owner
 wants an `.env.example`, they can add it.
 Decided by: claude-sonnet-5-5, 2026-09-29.
+
+## D7: AI functions check the user themselves; gateway `verify_jwt` stays off
+Why: the public anon key is itself a valid signed token, so the gateway check alone would still
+let anonymous callers through, and it can block browser preflight requests. Each AI function
+calls `requireUser` (`supabase/functions/_shared/auth.ts`), which asks the auth server to validate
+the token and rejects anything that is not a signed-in user. To confirm with a live request once
+a project exists (see TEST_CHECKLIST).
+Decided by: claude-sonnet-5-5, 2026-09-29.
+
+## D8: One new runtime dependency, `dompurify`
+Why: AI-generated Markdown was rendered as raw HTML. `src/lib/safeHtml.ts` sanitizes it. This was
+the audit's item F3, covered by the owner's instruction to continue the roadmap; it is the only
+new runtime dependency added in Phase B.
+Decided by: claude-sonnet-5-5, 2026-09-29.
+
+## D9: Function limits and models are settings; the defaults are guesses to check
+Why: input caps (60,000 characters of material, 1,000 of instructions, 6,000,000 characters of
+image) and the daily limit (50 calls) were chosen for safety, not measured. Models come from
+`GROQ_TEXT_MODEL` and `GROQ_VISION_MODEL`; the vision default was not verified against Groq's
+current list. Tune all of these from real use.
+Decided by: claude-sonnet-5-5, 2026-09-29.

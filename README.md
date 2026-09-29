@@ -151,13 +151,13 @@ Powered via Edge Functions using Google Gemini.
   - Edge Functions
 
 ## AI
-- Google Gemini (via Edge Functions)
+- Groq (llama models for notes, quizzes and grading; a vision model for timetable images), called only from Edge Functions
 
 ---
 
 # 🗄 Database Schema
 
-**Tables (13):**
+**Tables (14):**
 - profiles
 - subjects
 - study_sessions
@@ -170,7 +170,8 @@ Powered via Edge Functions using Google Gemini.
 - user_badges
 - ai_notes
 - semester_gpas
-- email_otps
+- quiz_attempts
+- ai_usage
 
 All tables protected using Row Level Security (RLS).
 
@@ -183,8 +184,10 @@ All tables protected using Row Level Security (RLS).
 | generate-ai-notes | AI note generation |
 | refine-ai-notes | AI note refinement |
 | parse-timetable | Image → timetable extraction |
-| send-otp | Email OTP sending |
-| verify-otp | Email OTP verification |
+| generate-ai-quiz | AI quiz generation |
+| grade-ai-quiz | Quiz grading (written answers graded by AI) |
+
+The AI functions only serve signed-in users and enforce a per-user daily limit.
 
 ---
 

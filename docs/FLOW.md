@@ -15,16 +15,21 @@ come back. About 37 places check the current user with `getSession`, `getUser` o
 `onAuthStateChange`; `AINotes`, `Quiz`, `Index` and `NotFound` do not check.
 
 ## Sign in and sign up (`src/pages/Auth.tsx`)
-Current state: a custom email one-time-code flow calls the edge functions `send-otp` and
-`verify-otp`. This is being replaced by Supabase built-in Auth (Google sign-in plus email and
-password), see `docs/DECISIONS.md` D2. Do not extend the custom flow.
+The screen uses Supabase built-in Auth only (decision D2): email and password sign-up and
+sign-in, Google sign-in, and password reset by email. The calls live in `src/lib/auth.ts`
+(`signUpWithEmail`, `signInWithEmail`, `signInWithGoogle`, `sendPasswordReset`); `Auth.tsx` calls
+them and shows toasts. A signed-in session sends the user to `/dashboard`. The full name typed at
+sign-up is stored as user metadata (`full_name`) for the profile trigger to copy.
 
 ## AI notes (`src/components/ai-notes/GenerateNotes.tsx`)
 1. User picks material (pasted text, uploaded file, or saved materials).
-2. `fetch` POST to `<supabase url>/functions/v1/generate-ai-notes` with the anon key as the
-   Bearer token.
-3. The function calls Groq with `stream: true` and returns the event stream.
-4. The component reads the stream, renders Markdown with `marked`, and loads it into the Tiptap
+2. `authHeaders()` (`src/lib/functionsAuth.ts`) supplies the signed-in user's access token, then
+   `fetch` POST to `<supabase url>/functions/v1/generate-ai-notes`.
+3. The function checks the caller is a real signed-in user (`_shared/auth.ts`), size-checks the
+   input, counts the call against the user's daily allowance (`consume_ai_quota`), then calls
+   Groq with `stream: true` and returns the event stream.
+4. The component reads the stream, renders Markdown with `renderMarkdown` (`src/lib/safeHtml.ts`:
+   `marked` plus DOMPurify, so the HTML is sanitized), and loads it into the Tiptap
    editor (`NoteEditor.tsx`). Refinement goes the same way through `refine-ai-notes`.
 5. Saving into `ai_notes`: not audited.
 

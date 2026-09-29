@@ -25,7 +25,8 @@ Supabase project
   Postgres tables (RLS: each user reads and writes only their own rows)
   Storage bucket: study-materials
   Edge functions: generate-ai-notes, refine-ai-notes, generate-ai-quiz,
-                  grade-ai-quiz, parse-timetable, send-otp, verify-otp
+                  grade-ai-quiz, parse-timetable
+                  (all require a signed-in user; shared code in functions/_shared)
         |
         v
 Groq API (AI functions only)
@@ -36,9 +37,9 @@ Groq API (AI functions only)
 `/my-subjects`, `/ai-notes`, `/quiz`, `/subject/:id`, `*` not found.
 
 ## Data model (tables in `src/integrations/supabase/types.ts`)
-ai_notes, certificates, email_otps, exam_subjects, exams, folders, profiles, quiz_attempts,
+ai_notes, ai_usage, certificates, exam_subjects, exams, folders, profiles, quiz_attempts,
 semester_gpas, study_materials, study_sessions, subjects, timetable_periods, user_badges.
-Schema history is `supabase/migrations/*.sql` (13 files, applied in filename order; never
+Schema history is `supabase/migrations/*.sql` (16 files, applied in filename order; never
 edit an existing one, add a new file).
 
 ## Environment

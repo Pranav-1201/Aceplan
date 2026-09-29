@@ -47,8 +47,13 @@ prepares the project side.
 ## 4. Edge functions and secrets
 ```bash
 npx supabase secrets set GROQ_API_KEY=<your Groq key>
+npx supabase secrets set ALLOWED_ORIGINS=http://localhost:8080
 npx supabase functions deploy
 ```
+`ALLOWED_ORIGINS` is a comma-separated list of the site addresses allowed to call the AI functions
+(add the production address once you have one). Optional: `AI_DAILY_LIMIT` (calls per user per
+day, default 50), `GROQ_TEXT_MODEL` and `GROQ_VISION_MODEL` (check Groq's current model list; the
+vision default is a best guess).
 `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are provided to functions by Supabase. Do not
 put secrets in the repo. Before sharing the app publicly, complete the security phase of the
 project roadmap.

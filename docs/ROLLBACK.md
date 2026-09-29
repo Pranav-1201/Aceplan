@@ -23,4 +23,10 @@ How to undo work if it breaks something. Read before any large or risky change.
 
 ## Hosting (after first deploy)
 - Static hosts keep previous builds; roll back by redeploying the previous build in the host's
-  dashboard. Record the drill (date, who, result) here once it has been done once.
+  dashboard (details and what is unchecked: `docs/DEPLOYMENT.md`). The drill has NOT been done yet.
+  Record it here (date, who, result) once it has.
+
+## Backups (Supabase Free plan)
+- There are no automatic backups on the Free plan (checked in Supabase's documentation). Export
+  with `npx supabase db dump -f backup-YYYY-MM-DD.sql` on a schedule and keep copies off-site.
+- Restore drill: load a dump into a scratch project before launch and note the result here.

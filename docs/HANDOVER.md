@@ -78,8 +78,18 @@ best guess and was not verified.
 3. Permission to push a branch so CI can run.
 4. `.env.example`: permission settings deny `.env*`, so none was created (D6).
 
+## Phase E (deploy and operations): status
+Only the documentation could be done without the owner's accounts: `docs/DEPLOYMENT.md` (host
+setup, post-deploy settings, monitoring, backups, rollback, cost) with each vendor fact marked
+checked or not checked. Vendor facts checked on 2026-09-29: Cloudflare Pages serves unknown paths
+as a single-page app when there is no `404.html`; the Supabase Free plan has no automatic backups
+and no point-in-time recovery; its limits are 2 projects, 500 MB database, 1 GB storage, 50,000
+monthly active users and 500,000 function invocations a month. NOT checked: Cloudflare Pages and
+Groq free limits, the Supabase inactivity-pause threshold, host build settings. Nothing is
+deployed, no rollback or restore drill has been done, and no alerting exists.
+
 ## Next
-Phase E (deploy and operations). Almost all of it needs the owner: create the new Supabase project
+Phase E needs the owner. Almost all of it: create the new Supabase project
 and the Google sign-in client (`docs/SUPABASE_SETUP.md`), choose a host, decide on pushing so CI
 can run, then do the live checks listed under Phase B and drill one rollback. After the project
 exists, come back for the Phase D items that need a running app. The detailed audit roadmap and

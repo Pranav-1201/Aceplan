@@ -257,6 +257,7 @@ VITE_SUPABASE_PROJECT_ID=<project-ref>
 
 The anon key is public by design. Edge function secrets such as `GROQ_API_KEY` are set
 on the Supabase project, not in `.env`. Full backend setup: [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md).
+Going live (hosting, backups, rollback, monitoring): [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ## Checks
 

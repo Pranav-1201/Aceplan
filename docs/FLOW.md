@@ -22,7 +22,10 @@ them and shows toasts. A signed-in session sends the user to `/dashboard`. The f
 sign-up is stored as user metadata (`full_name`) for the profile trigger to copy.
 
 ## AI notes (`src/components/ai-notes/GenerateNotes.tsx`)
-1. User picks material (pasted text, uploaded file, or saved materials).
+1. User picks material (pasted text, uploaded file, or saved materials). Uploaded files must be
+   `.txt`, `.md`, `.markdown` or `.csv`; PDF, Word and PowerPoint files are refused with a clear
+   message (`src/lib/fileText.ts`) instead of being read as text, and the user is told to paste
+   the text.
 2. `authHeaders()` (`src/lib/functionsAuth.ts`) supplies the signed-in user's access token, then
    `fetch` POST to `<supabase url>/functions/v1/generate-ai-notes`.
 3. The function checks the caller is a real signed-in user (`_shared/auth.ts`), size-checks the

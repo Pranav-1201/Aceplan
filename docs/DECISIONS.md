@@ -68,3 +68,12 @@ image) and the daily limit (50 calls) were chosen for safety, not measured. Mode
 `GROQ_TEXT_MODEL` and `GROQ_VISION_MODEL`; the vision default was not verified against Groq's
 current list. Tune all of these from real use.
 Decided by: claude-sonnet-5-5, 2026-09-29.
+
+## D10: The notes uploader reads only plain-text files; PDF and Word are refused
+Why: the uploader accepted PDF, Word and PowerPoint files but read them with `File.text()`, which
+produces garbage that was then sent to the AI as the student's material. It now accepts only
+`.txt`, `.md`, `.markdown` and `.csv`, refuses anything that decodes as binary, and tells the user
+to paste the text. Real PDF and Word support needs a text-extraction library (a new runtime
+dependency, for example pdf.js for PDFs); that is a decision for the owner, because PDFs are the
+common student format, and it is not done.
+Decided by: claude-sonnet-5-5, 2026-09-29.

@@ -45,6 +45,17 @@ Follow-ups Phase B leaves open:
 - Live checks once a project exists: anon-key request to an AI function gets 401, signed-in works,
   the 51st call in a day gets 429, Google sign-in returns to `/dashboard`.
 
+## Phase C (correctness): status
+Most planned Phase C items were already fixed inside Phase B: the broken model ids, the signup
+that could not finish (the flow was removed), the quiz-grader crashes and the `NaN` percentage, and
+the "AI gateway" error wording.
+
+| Item | State |
+|---|---|
+| Notes uploader read PDF/Word as text | Fixed and committed: plain-text files only, binary refused with a message (`src/lib/fileText.ts`, 9 tests, 8 planted bugs caught after one gap was closed). Real PDF/Word support is an owner decision (D10) |
+| Grader trusts the quiz key sent by the browser | Deliberately NOT done. The only person it can help is the student cheating their own practice score, so a server-side quiz store is not worth its cost now. Revisit if scores are ever shared or ranked |
+| JSON mode for quiz and grading replies | NOT done. A malformed reply now returns a clear retry message instead of crashing; Groq's JSON mode would not fit the grader's array reply and was not verified |
+
 Function settings to set on the new project (all optional except the key): `GROQ_API_KEY`,
 `ALLOWED_ORIGINS` (comma-separated site origins), `AI_DAILY_LIMIT` (default 50),
 `GROQ_TEXT_MODEL`, `GROQ_VISION_MODEL`. Check Groq's current model list: the vision default is a
@@ -57,8 +68,9 @@ best guess and was not verified.
 4. `.env.example`: permission settings deny `.env*`, so none was created (D6).
 
 ## Next
-Phase C (correctness). The detailed audit roadmap and the plans are kept privately, outside this
-repo.
+Phase D (frontend and UX): split the 1.8 MB bundle by route, one `ProtectedRoute` instead of about
+37 scattered session checks, split the 1390-line `Exams.tsx`, remove the `any` types, accessibility.
+The detailed audit roadmap and the plans are kept privately, outside this repo.
 
 ## Watch out for
 - A first-touch gate hook denies the first write of every new file until facts are stated; state

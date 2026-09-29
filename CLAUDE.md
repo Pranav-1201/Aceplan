@@ -9,6 +9,13 @@ materials, badges). AI notes and quizzes are an opt-in extra, not the product.
 3. `docs/ARCHITECTURE.md` and `docs/FLOW.md`: the map, and how execution travels.
 4. `docs/DECISIONS.md`: settled choices. Do not re-litigate them without new evidence.
 
+## Where to save what you make (hard rule from the owner)
+Everything you make for this project that is not part of the code (plans, roadmaps, reports,
+Word or PDF files, notes) goes in `D:\Projects and Research papers\PBL Project - Aceplan`. Never
+save such files on the Desktop or anywhere else. Code and the code's own documents (`docs/`,
+this file) stay in this repository. Keep private material, such as the audit roadmap, in that
+folder and out of this public repository.
+
 ## Working agreements
 - Explain the plan before implementing it. Catch bad reasoning while it is a paragraph.
 - One logical change per request and per commit. Keep changes small and traceable.

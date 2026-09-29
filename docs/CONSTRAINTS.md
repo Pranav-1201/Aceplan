@@ -13,6 +13,11 @@ Short on purpose. "Allow" means allow within these lines.
 - No AI or assistant attribution in commits, pull requests or releases (no Co-Authored-By
   trailers). The owner is the sole developer of record.
 
+## Where things are saved
+- Everything made for this project that is not code (plans, roadmaps, reports, Word and PDF files,
+  notes) is saved in `D:\Projects and Research papers\PBL Project - Aceplan`, never on the Desktop
+  or elsewhere. This is the owner's hard rule. Private material stays there, out of this repo.
+
 ## Code
 - No new runtime dependency without asking. A dev-only tool needs a line in `docs/DECISIONS.md`.
 - Never edit an existing file in `supabase/migrations/`; add a new migration.

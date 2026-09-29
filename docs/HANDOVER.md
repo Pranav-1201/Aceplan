@@ -3,6 +3,13 @@
 Where things stand right now. Rewrite this at the end of every session.
 Last updated: 2026-09-29, model claude-sonnet-5-5.
 
+## Where the private files are
+The owner's hard rule: everything made for this project that is not code lives in
+`D:\Projects and Research papers\PBL Project - Aceplan`. There you will find the private audit
+roadmap, the Phase A and B plans, and the Word guide `AcePlan-Unblock-Guide-2026-09-30.docx`
+(step-by-step instructions for everything that is waiting on the owner). Never save them on the
+Desktop.
+
 ## Direction (settled, see DECISIONS.md)
 Semester planner for students; AI notes and quizzes are opt-in. Authentication moves to
 Supabase built-in Auth with Google sign-in plus email and password (D1, D2).

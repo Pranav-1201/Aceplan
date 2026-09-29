@@ -21,7 +21,8 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { toast } from "sonner";
-import { marked } from "marked";
+import { authHeaders } from "@/lib/functionsAuth";
+import { renderMarkdown } from "@/lib/safeHtml";
 import {
   ArrowRight,
   ArrowLeft,
@@ -179,10 +180,7 @@ const GenerateNotes = ({
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-ai-notes`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
+          headers: await authHeaders(),
           body: JSON.stringify({
             materialContent,
             userPrompt: userPrompt.trim() || undefined,
@@ -249,7 +247,7 @@ const GenerateNotes = ({
 
       const noteTitle =
         title.trim() || `AI Notes - ${new Date().toLocaleDateString()}`;
-      const htmlContent = marked.parse(fullContent) as string;
+      const htmlContent = renderMarkdown(fullContent);
 
       const { data: note, error } = (await (supabase as any)
         .from("ai_notes")
@@ -535,7 +533,7 @@ const GenerateNotes = ({
             <div
               className="tiptap-preview max-h-[500px] overflow-y-auto p-4 border rounded-lg bg-muted/30"
               dangerouslySetInnerHTML={{
-                __html: marked.parse(generatedContent) as string,
+                __html: renderMarkdown(generatedContent),
               }}
             />
           </CardContent>

@@ -1,12 +1,9 @@
 project_id = "txilzegfacoqhrylwmzr"
 
+# The gateway's verify_jwt check is left off for these functions on purpose: it would also accept
+# the public anon key, and it can block browser preflight requests. Each function instead checks
+# that the caller is a real signed-in user itself (supabase/functions/_shared/auth.ts).
 [functions.parse-timetable]
-verify_jwt = false
-
-[functions.send-otp]
-verify_jwt = false
-
-[functions.verify-otp]
 verify_jwt = false
 
 [functions.generate-ai-notes]

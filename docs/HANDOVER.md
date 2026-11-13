@@ -8,9 +8,10 @@ heading are unchanged from 2026-09-30, model claude-sonnet-5-5).
 No project code changed. What was done: a full re-audit, a browser run of every page at five
 screen widths against a mocked backend (there is still no live project), and a new phased plan.
 The plan, the findings and 42 screenshots are in the private project folder as
-`AcePlan-Audit-Roadmap-2026-11-13-rev2.docx` and `Audit-2026-11-13-screenshots`. Revision 2
-includes the owner's answers of 2026-11-13 (recorded here as D13 in `DECISIONS.md`) and
-supersedes both revision 1 and the September roadmap for planning.
+`AcePlan-Audit-Roadmap-2026-11-13-rev3.docx` and `Audit-2026-11-13-screenshots`. Revision 3
+(2026-11-14) includes the owner's answers of 2026-11-13 and the chosen palette (recorded here
+as D13 in `DECISIONS.md`) and supersedes revisions 1 and 2 and the September roadmap for
+planning. The roadmap itself is never committed to this public repo.
 
 Palette chosen by the owner on 2026-11-13 from mock-ups (kept in the private folder as
 `Palette-Mockups-2026-11-13`): Forest Ink `#04100C`, Deep Teal `#163E44`, Citrus Yellow

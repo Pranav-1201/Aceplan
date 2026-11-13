@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { marked } from "marked";
+import { authHeaders } from "@/lib/functionsAuth";
+import { renderMarkdown } from "@/lib/safeHtml";
 import TurndownService from "turndown";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -59,10 +60,7 @@ const RefinementDialog = ({
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/refine-ai-notes`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
+          headers: await authHeaders(),
           body: JSON.stringify({
             currentContent: markdownContent,
             instruction: instruction.trim(),
@@ -135,7 +133,7 @@ const RefinementDialog = ({
         .update({ refinement_history: history })
         .eq("id", noteId);
 
-      const htmlContent = marked.parse(fullContent) as string;
+      const htmlContent = renderMarkdown(fullContent);
       onRefined(htmlContent);
       setInstruction("");
       setPreview("");

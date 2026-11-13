@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { authHeaders } from "@/lib/functionsAuth";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -156,10 +157,7 @@ const QuizGenerator = ({ onQuizSaved }: { onQuizSaved?: () => void }) => {
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-ai-quiz`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
+          headers: await authHeaders(),
           body: JSON.stringify({ materialContent: content, quizLevel }),
         }
       );
@@ -198,10 +196,7 @@ const QuizGenerator = ({ onQuizSaved }: { onQuizSaved?: () => void }) => {
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/grade-ai-quiz`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
+          headers: await authHeaders(),
           body: JSON.stringify({
             mcqs,
             subjective,

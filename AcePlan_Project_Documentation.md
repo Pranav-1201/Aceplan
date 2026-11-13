@@ -130,8 +130,11 @@ supabase/
 ├── config.toml                # Edge function configuration
 ├── functions/
 │   ├── parse-timetable/       # AI timetable image parser
-│   ├── send-otp/              # OTP email sender
-│   └── verify-otp/            # OTP verification & user creation
+│   ├── generate-ai-notes/     # AI notes generation (streamed)
+│   ├── refine-ai-notes/       # AI notes refinement (streamed)
+│   ├── generate-ai-quiz/      # AI quiz generation
+│   ├── grade-ai-quiz/         # Quiz grading
+│   └── _shared/               # Shared helpers (CORS, input limits, signed-in check)
 └── migrations/                # Database migration files
 ```
 
@@ -315,16 +318,14 @@ QueryClientProvider (TanStack React Query)
 
 **How:** Automatically awarded by `badgeUtils.ts` when conditions are met (study sessions, streaks, profile completion).
 
-#### 4.12 `email_otps`
+#### 4.12 `ai_usage`
 | Column | Type | Description |
 |--------|------|-------------|
-| id | UUID (PK) | OTP record identifier |
-| email | TEXT | Target email |
-| otp_code | TEXT | 6-digit code |
-| expires_at | TIMESTAMPTZ | Expiration time (10 min) |
-| verified | BOOLEAN | Whether verified |
+| user_id | UUID (PK part) | The signed-in user |
+| day | DATE (PK part) | Calendar day |
+| used | INTEGER | AI calls counted for that user on that day |
 
-**How:** Created by `send-otp` edge function, consumed by `verify-otp` edge function. Deleted after verification.
+**How:** Written only by the `consume_ai_quota` database function, which the AI edge functions call before spending AI credits (default limit 50 calls per user per day, set by `AI_DAILY_LIMIT`). Row level security is on with no policies, so nobody reads or writes it directly. The former `email_otps` table was dropped together with the custom one-time-code login.
 
 ### Database Functions & Triggers
 
@@ -359,14 +360,8 @@ Multi-method authentication supporting email/password, Google OAuth, email OTP, 
 3. JWT token stored in localStorage
 4. `onAuthStateChange` listener redirects to `/dashboard`
 
-#### 5.3 Email OTP Sign Up (3-step flow)
-1. **Step 1 – Email:** User enters name + email → `send-otp` edge function sends 6-digit code via Resend
-2. **Step 2 – OTP:** User enters 6-digit code → `verify-otp` validates code against `email_otps` table
-3. **Step 3 – Password:** User sets password → `verify-otp` creates user with `admin.createUser()` (email pre-confirmed)
-
-#### 5.4 Email OTP Sign In (2-step flow)
-1. **Step 1 – Email:** User enters email → `send-otp` sends code
-2. **Step 2 – OTP:** User enters code → `verify-otp` generates magic link → Client calls `supabase.auth.verifyOtp()` with hashed token
+#### 5.3 and 5.4 Email one-time-code sign up and sign in (removed)
+The custom email one-time-code login (the `send-otp` and `verify-otp` functions and the `email_otps` table) was removed. Sign-up and sign-in use only Supabase's built-in email and password and Google (see `docs/DECISIONS.md` D2). One-time email codes can return later through Supabase's built-in service once a custom email sender exists.
 
 #### 5.5 Google OAuth
 1. `supabase.auth.signInWithOAuth({ provider: 'google' })` redirects to Google
@@ -575,51 +570,31 @@ Multi-method authentication supporting email/password, Google OAuth, email OTP, 
 1. Receives: `imageBase64`, `additionalContext`, `existingSubjects`
 2. Constructs prompt asking AI to extract periods (subject, day, time, location, teacher)
 3. If existing subjects provided, instructs AI to match abbreviations (e.g., "CN" → "Computer Networks")
-4. Calls Groq AI Gateway (`llama-3.3-70b-versatile`) with image + prompt
+4. Calls Groq with a vision-capable model (`GROQ_VISION_MODEL`) and the image + prompt
 5. Parses JSON array from AI response using regex match
 6. Returns extracted periods array
 7. Frontend then matches/creates subjects and inserts into `timetable_periods`
 
-**Config:** `verify_jwt = false` (public endpoint, called from client)
+**Config:** `verify_jwt = false` on purpose; the function checks for a signed-in user itself (see 7.3).
 
-### 7.2 `send-otp`
+### 7.2 `generate-ai-notes`, `refine-ai-notes`, `generate-ai-quiz`, `grade-ai-quiz`
 
-**What:** Generates and emails a 6-digit OTP for email verification.
+**What:** The AI notes and quiz functions. They call Groq with `GROQ_TEXT_MODEL` (default `llama-3.3-70b-versatile`).
 
-**Where:** `supabase/functions/send-otp/index.ts`
+**Where:** `supabase/functions/<name>/index.ts`
 
-**Why:** Enables email OTP authentication without requiring Twilio or other SMS providers.
+**How:** Notes generation and refinement stream the model's answer back to the browser. Quiz generation returns JSON questions. Grading checks multiple-choice answers inside the function and asks the AI to grade written answers.
 
-**How:**
-1. Receives: `{ email }`
-2. Generates random 6-digit code
-3. Deletes any existing OTPs for same email (one active OTP per email)
-4. Stores OTP in `email_otps` table with 10-minute expiration
-5. Sends styled HTML email via Resend API with the code
-6. Returns success/failure
+### 7.3 Checks every AI function makes
 
-**Dependencies:** Resend API (requires `RESEND_API_KEY` secret)
+Shared code lives in `supabase/functions/_shared/`.
+1. **CORS allowlist:** only origins listed in the `ALLOWED_ORIGINS` secret are answered.
+2. **Signed-in user:** the caller's token must belong to a real user (`requireUser`); the public anon key is refused.
+3. **Input size limits:** oversized or missing input is rejected before any AI cost.
+4. **Daily limit:** the `consume_ai_quota` database function counts each AI call per user per day (`AI_DAILY_LIMIT`, default 50).
+5. **Generic errors:** callers get a fixed message; details go to the function logs only.
 
-### 7.3 `verify-otp`
-
-**What:** Verifies OTP code and handles user creation or sign-in.
-
-**Where:** `supabase/functions/verify-otp/index.ts`
-
-**Why:** Completes the OTP flow by validating the code and performing auth actions.
-
-**How:**
-1. Receives: `{ email, otp, password?, fullName?, isSignUp, isSignIn? }`
-2. Looks up OTP in `email_otps` table (matching email, code, not yet verified)
-3. Checks expiration
-4. Marks as verified, then deletes record
-
-**Branch logic:**
-- **If `isSignIn`:** Finds existing user → generates magic link via `admin.generateLink()` → returns `token_hash` for client to call `verifyOtp()`
-- **If `isSignUp`:** Creates user via `admin.createUser()` with `email_confirm: true` (pre-confirmed since OTP verified)
-- **Otherwise:** Just returns verification success (intermediate step in sign-up flow)
-
-**Config:** `verify_jwt = false`, uses `SUPABASE_SERVICE_ROLE_KEY` for admin operations
+**Removed:** the earlier `send-otp` and `verify-otp` functions (custom email one-time-code login) no longer exist; see section 5.
 
 ---
 
@@ -689,7 +664,7 @@ CREATE POLICY "Users can delete own [table]" ON public.[table]
 - `profiles`: Uses `auth.uid() = id` (id IS the user_id). No DELETE policy.
 - `user_badges`: No UPDATE or DELETE policies (badges are permanent).
 - `exam_subjects`: Policies check ownership via JOIN to `exams` table.
-- `email_otps`: Anonymous access allowed (used before authentication).
+- `ai_usage`: RLS is on with no policies; only the `consume_ai_quota` function writes it.
 
 ### Input Validation
 - **Client-side:** Zod schemas validate email format, password length, name length
@@ -743,14 +718,14 @@ Built on **shadcn/ui** (Radix UI primitives):
 ### Frontend
 - Built with Vite (optimized production bundle)
 - Hosted on CDN for global distribution
-- Automatic code splitting via React Router
+- Single JavaScript bundle today (no route-level code splitting yet; planned)
 
 ### Backend 
 - **Database:** PostgreSQL with connection pooling
 - **Auth:** Built-in email/password + OAuth providers
 - **Storage:** `study-materials` bucket (public) for avatars, PDFs, resumes, certificates
 - **Edge Functions:** Deno-based serverless functions, auto-deployed on code change
-- **Secrets:** `RESEND_API_KEY`, `ACEPLAN_GROQ_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY` managed securely
+- **Secrets:** `RESEND_API_KEY`, `GROQ_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY` managed securely
 
 ### Environment Variables
 | Variable | Purpose |
@@ -759,7 +734,7 @@ Built on **shadcn/ui** (Radix UI primitives):
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Anon key for client (client-side) |
 | `SUPABASE_SERVICE_ROLE_KEY` | Admin key (edge functions only) |
 | `RESEND_API_KEY` | Email sending service |
-| `ACEPLAN_GROQ_API_KEY` | AI gateway for timetable parsing |
+| `GROQ_API_KEY` | Groq API key used by the AI edge functions (set as a Supabase secret) |
 
 ---
 
@@ -784,21 +759,14 @@ Badge check runs (duration + streak)
 Toast notification if badge earned
 ```
 
-### OTP Sign Up Flow
+### Email and Password Sign Up Flow
 ```
-User enters name + email → Frontend calls send-otp edge function
+User enters name, email and password → Frontend calls supabase.auth.signUp (name saved as user metadata)
     ↓
-Edge function: Generate 6-digit OTP → Store in email_otps → Send via Resend
+Database trigger handle_new_user creates the profile row
     ↓
-User enters OTP → Frontend calls verify-otp (isSignUp: false)
-    ↓
-Edge function: Validate OTP → Mark verified → Delete record → Return success
-    ↓
-User sets password → Frontend calls verify-otp (isSignUp: true)
-    ↓
-Edge function: admin.createUser() with email_confirm: true → Return success
-    ↓
-User redirected to sign in
+Email confirmation off: a session is returned and the user goes to the dashboard
+Email confirmation on: the user must click the link in the email first
 ```
 
 ### AI Timetable Parsing Flow
@@ -846,7 +814,7 @@ Profile page reads synced CGPA value
 | Backend | (PostgreSQL + Edge Functions) |
 | UI Library | shadcn/ui (Radix UI) |
 | Database Tables | 12 |
-| Edge Functions | 3 (parse-timetable, send-otp, verify-otp) |
+| Edge Functions | 5 (parse-timetable, generate-ai-notes, refine-ai-notes, generate-ai-quiz, grade-ai-quiz) |
 | Authentication Methods | 4 (Email/Password, Google OAuth, Email OTP, Magic Link) |
 | Badge Types | 11 |
 | Chart Library | Recharts |

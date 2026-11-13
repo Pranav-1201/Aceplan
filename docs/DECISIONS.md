@@ -104,3 +104,32 @@ Decided by: claude-sonnet-5-5, 2026-09-29.
 - Host: Cloudflare Pages (D11 stands; no routing file needed).
 - Order of work: push first, then the storage split and PDF/Word, then the `any` fixes.
 Decided by: project owner, 2026-09-30.
+
+## D13: Owner decisions of 2026-11-13 (after the second audit)
+- Backend: a fresh Supabase project. The owner's own account is seeded with real study material
+  from the owner's machine; that material is for the owner's account only and never becomes
+  public sample data, a screenshot or a file in this repo.
+- Product: the exam-season planner (a generated day-by-day study plan from exams, timetable and
+  timer data) is the spine. Every existing feature stays and more are added; D1 still holds (AI
+  is an opt-in extra).
+- Profile: resume, certificates and school scores stay. They become optional and private.
+- Guest mode: wanted. The data layer is to be built so that device-only storage is an addition.
+- Audience: built for any country (local dates, any term system, any grading scale), with Indian
+  presets. Confirmed by the owner on 2026-11-13.
+- Look: a completely new visual identity taken from the owner's colour playbook, defined as
+  design tokens with a light and a dark theme. Palette chosen by the owner from mock-ups of
+  three candidates: Forest Ink `#04100C`, Deep Teal `#163E44`, Citrus Yellow `#E4F455`, dark
+  theme first. Measured contrast: citrus on ink 16.0, citrus on teal 9.6, Oat `#EEE6D6` on ink
+  15.6, oat on teal 9.4. Citrus on oat is 1.0, so the light theme uses oat as the page colour
+  and teal as the action colour, and citrus is never used on a light surface. Citrus is close
+  to warning yellow, so warnings need an icon and words as well as colour.
+- Budget: free plans only for now; no domain yet. Consequence: the first deploy uses Google
+  sign-in, and email sign-up is switched on in production once a domain and sender exist.
+- AI provider: stay on Groq's free plan, AI off by default. A ChatGPT subscription does not
+  include API access (checked on OpenAI's help pages, 2026-11-13), so it cannot power the app.
+  The provider is to become a setting so it can be changed without code changes.
+- Deadline: none. Real use so far: none.
+- Contact and operator name on public pages: the owner's own name and email address.
+- Process: plans are revised and walked through with the owner before anything is committed or
+  pushed.
+Decided by: project owner, 2026-11-13. Recorded by claude-fable-5-2.

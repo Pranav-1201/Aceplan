@@ -1,7 +1,44 @@
 # Handover
 
 Where things stand right now. Rewrite this at the end of every session.
-Last updated: 2026-09-30, model claude-sonnet-5-5.
+Last updated: 2026-11-13, model claude-fable-5-2 (audit session; the sections below the next
+heading are unchanged from 2026-09-30, model claude-sonnet-5-5).
+
+## Session of 2026-11-13: second audit, plan only
+No project code changed. What was done: a full re-audit, a browser run of every page at five
+screen widths against a mocked backend (there is still no live project), and a new phased plan.
+The plan, the findings and 42 screenshots are in the private project folder as
+`AcePlan-Audit-Roadmap-2026-11-13-rev2.docx` and `Audit-2026-11-13-screenshots`. Revision 2
+includes the owner's answers of 2026-11-13 (recorded here as D13 in `DECISIONS.md`) and
+supersedes both revision 1 and the September roadmap for planning.
+
+Palette chosen by the owner on 2026-11-13 from mock-ups (kept in the private folder as
+`Palette-Mockups-2026-11-13`): Forest Ink `#04100C`, Deep Teal `#163E44`, Citrus Yellow
+`#E4F455`, dark theme first. The light theme uses Oat `#EEE6D6` as the page colour with Deep
+Teal as the action colour, because citrus has no contrast on a light page. The mock-ups also
+propose the typefaces (Bricolage Grotesque for headings, Instrument Sans for the interface) and
+the "runway" chart; those are proposals, not yet approved. See D13 in `DECISIONS.md`.
+
+Also settled on 2026-11-13: the audience reading, the contact address, and the first-deploy
+conditions (Google sign-in only, AI off). A session may create the new Supabase project; it has
+not been created yet. Still open: the smaller questions in section 10 of the roadmap.
+
+The plan now has nine phases (0 to 8): backend with seed data, truth and safety, self-checking
+pipeline, new visual identity and shell, the product loop, a first deploy, reach, study tools,
+and AI extras. No code is to be written until the owner approves the revised plan.
+
+Measured on this branch at 36181a1 on 2026-11-13: `npm run typecheck` exit 0 (117 files),
+`npx vitest run` 54 passed in 8 files, `npm run build` ok (entry chunk 487.74 kB, 146.88 kB gzip),
+`npx eslint src supabase` 103 problems (89 errors, all `no-explicit-any`). Pull request #1 is still
+open and unmerged. The owner's Supabase account holds three projects and all are paused, so
+"Blocked on the owner" item 1 is unchanged.
+
+What is left: the owner's answers, then the new plan's phases 1 and 2 (they need no live project).
+The "Next" list further down is the September order; where the two differ, the new plan wins once
+the owner accepts it.
+
+Watch out for: the Playwright browser tool writes a `.playwright-mcp` folder into the repository
+root and it is not git-ignored; delete it before finishing a session.
 
 ## Where the private files are
 The owner's hard rule: everything made for this project that is not code lives in

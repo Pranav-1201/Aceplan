@@ -133,3 +133,27 @@ Decided by: project owner, 2026-09-30.
 - Process: plans are revised and walked through with the owner before anything is committed or
   pushed.
 Decided by: project owner, 2026-11-13. Recorded by claude-fable-5-2.
+
+## D14: Production dependency advisories (roadmap B14, finding S8)
+- Done: in-range updates only, by package name. `npm audit --omit=dev` went from 21 advisories
+  (1 critical, 13 high, 7 moderate) to 3 (1 high, 2 moderate). The critical one (dompurify
+  3.4.16, the sanitiser for AI output) is fixed (3.4.18). `@tiptap/core` and `@tiptap/pm` moved
+  3.19 to 3.34 while the other Tiptap packages stay at 3.19; the editor is covered by build and
+  typecheck only, so try it in the browser.
+- Not used: `npm audit fix` unqualified. It also bumped rollup to 4.68.5, whose native binary
+  Windows Application Control on the owner's machine refuses to load (`ERR_DLOPEN_FAILED`);
+  4.24.0 loads. Rollup is dev-only and not in the production audit, so it stays at 4.24.0.
+  `--omit=dev` on the fix command would have pruned 271 dev packages; never combine them.
+- Deferred, each needs a major upgrade and an owner-visible change:
+  - zod 3.x (high, memory exhaustion on oversized constrained collections): zod is used in four
+    files, all for small form and sign-in fields, with no array, set or record constraints.
+    Not reachable. Upgrade to 4 with the Phase 4 strict-mode work.
+  - react-router-dom 6.30 (moderate): the open-redirect advisory needs an attacker-controlled
+    navigation target; `navigate()` targets are the hardcoded list in `AppHeader`, literals, or a
+    fixed prefix plus a database id; no `<Link to={...}>` is dynamic and no redirect target is
+    read from the URL. The SSR advisory does not apply: no server
+    rendering. Upgrade to 7 with the Phase 3 shell work.
+- Gate: CI job `audit` runs `npm audit --omit=dev --audit-level=critical`. It exits 1 on the old
+  lockfile and 0 on the new one (checked locally). Raise it to `high` once zod is upgraded.
+- Dev-only advisories (vitest and others) are not triaged here; they never reach students.
+Recorded by claude-sonnet-5-5, 2026-11-17.

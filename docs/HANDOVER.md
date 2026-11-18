@@ -1,8 +1,35 @@
 # Handover
 
 Where things stand right now. Rewrite this at the end of every session.
-Last updated: 2026-11-13, model claude-fable-5-2 (audit session; the sections below the next
-heading are unchanged from 2026-09-30, model claude-sonnet-5-5).
+Last updated: 2026-11-18, model claude-sonnet-5-5 (Phase 1 started). The section after this
+line is new; the 2026-11-13 section and everything below it are unchanged from earlier sessions.
+
+## Session of 2026-11-17 to 18: Phase 1 (truth and safety) started
+Branch `phase-1/truth-and-safety`, branched from `phase-b/security`, three commits, trace in
+`docs/work/phase-1-truth-and-safety.md`. The owner approved starting the roadmap on 2026-11-17.
+- H1 `ab0ffce`: invented numbers and features removed from the landing page.
+- B14 `324fd6c`: dompurify critical advisory fixed, production advisories 21 to 3, CI job `audit`
+  added (fails on critical). The two left (zod, react-router) are deferred with reasons in D14.
+- B16 `ce1b3c5`: one local-date helper (`src/lib/localDate.ts`) used everywhere; 52 new tests run
+  in three time zones. Suite: 106 passed in 9 files; typecheck clean.
+
+Next, in this order: B15 (timer: one row per session, a status column, statistics count only
+completed rows; needs a migration, and this is where session timestamps get a time zone), B13
+(password reset page; reproduce on the live project when one exists), B17, B22, B23, then B7
+(private storage split). Phase 2 (CI layout, accessibility and contrast checks, a cross-user
+isolation test) can run beside these.
+
+Watch out for:
+- Never run a bare `npm audit fix`. It bumped dev-only rollup to 4.68.5, and Windows Application
+  Control blocked that native binary on the owner's machine, so tests and build died. Update by
+  name with `npm update <packages>`. Rollup stays at 4.24.0 (not retested after waiting, since a
+  first-load block can clear).
+- `@tiptap/core` and `@tiptap/pm` are at 3.34 while the other Tiptap packages are at 3.19; the
+  notes editor was never opened in a browser. Open it once.
+- Not verified anywhere in Phase 1 so far: behaviour in a browser, and everything live. There is
+  still no Supabase project.
+- A hook leaves empty junk files in the repo root when written text contains arrows or braces;
+  check `git status --short` after edits.
 
 ## Session of 2026-11-13: second audit, plan only
 No project code changed. What was done: a full re-audit, a browser run of every page at five

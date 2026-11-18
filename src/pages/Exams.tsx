@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { daysUntil as calendarDaysUntil, parseLocalDate, todayLocal } from "@/lib/localDate";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -467,7 +468,7 @@ const Exams = () => {
   };
 
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = todayLocal();
   const upcomingExams = exams.filter(e => e.exam_date >= today);
   const pastExams = exams.filter(e => e.exam_date < today);
 
@@ -572,9 +573,9 @@ const Exams = () => {
     const filteredExams = getFilteredExamsForStats();
     return filteredExams
       .filter(e => e.score !== null)
-      .sort((a, b) => new Date(a.exam_date).getTime() - new Date(b.exam_date).getTime())
+      .sort((a, b) => parseLocalDate(a.exam_date).getTime() - parseLocalDate(b.exam_date).getTime())
       .map(e => ({
-        date: format(new Date(e.exam_date), "MMM dd"),
+        date: format(parseLocalDate(e.exam_date), "MMM dd"),
         score: e.score,
         title: e.title
       }));
@@ -623,9 +624,7 @@ const Exams = () => {
   }
 
   const renderExamCard = (exam: Exam, isPast: boolean) => {
-    const daysUntil = Math.ceil(
-      (new Date(exam.exam_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
-    );
+    const daysUntil = calendarDaysUntil(exam.exam_date);
 
     return (
       <div
@@ -643,7 +642,7 @@ const Exams = () => {
               )}
             </div>
             <p className="text-sm text-muted-foreground mt-1">
-              {format(new Date(exam.exam_date), "MMMM dd, yyyy")}
+              {format(parseLocalDate(exam.exam_date), "MMMM dd, yyyy")}
             </p>
           </div>
           <div className="flex items-center gap-2">

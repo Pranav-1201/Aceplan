@@ -33,6 +33,25 @@ each deferred with a written reason in D14. New CI job `audit` exits 1 on the ol
 on the new one.
 Not verified: the Tiptap editor in a browser (core and pm are at 3.34, the extensions at 3.19).
 
+## B16: dates on the student's local calendar (done in the browser code; storage part deferred)
+Found: finding C11. Eight places built "today" with `toISOString().split('T')[0]` (the UTC day;
+in India that is yesterday until 05:30) and about fifteen read a bare `YYYY-MM-DD` column with
+`new Date(...)`, which is UTC midnight and shows the previous day west of Greenwich.
+Done: `src/lib/localDate.ts` (`todayLocal`, `toLocalDateString`, `parseLocalDate`, `addDays`,
+`daysUntil`, `computeStreak`) used by StudyTimer, badgeUtils, Statistics, Exams, Profile,
+EditExamDialog, SubjectCard, UpcomingExams, MySubjects and SubjectDetail. The streak walk in
+badgeUtils is now the pure `computeStreak`, so it can be tested.
+Verified: 52 new tests, run in three zones (Asia/Kolkata, America/Los_Angeles, Pacific/Auckland)
+against an `Intl.DateTimeFormat` oracle that does not use the code under test. Nine planted bugs
+(UTC day, `toISOString`, UTC-midnight parse, rollover accepted, 24-hour-block addition, truncated
+day count, yesterday ignored, wrong step after yesterday, gaps counted) were each killed, one per
+run; the file was restored and the 52 pass again. Full suite 106 passed in 9 files; typecheck
+clean; the grep for `toISOString().split` and `new Date(exam_date|date)` finds nothing left.
+Not done: the roadmap also says to store session timestamps with a time zone. That needs a
+migration and belongs with B15 (timer rows). `CertificateCard` and `BadgeCard` still format a
+date with the runtime default; the certificate date column was not checked. The week still starts
+on Sunday (C13). Not tried in a browser: no live project.
+
 ## Open items
-B16 (local dates), B15 (timer), B13 (password reset), B17, B22, B23, B7 (storage split) remain.
+B15 (timer), B13 (password reset), B17, B22, B23, B7 (storage split) remain.
 A pull request is needed for CI to run on this branch.

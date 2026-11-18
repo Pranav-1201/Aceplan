@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { parseLocalDate, todayLocal } from "@/lib/localDate";
 import { User } from "@supabase/supabase-js";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -118,7 +119,7 @@ const Statistics = () => {
   };
 
   const getDailyData = () => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = todayLocal();
     const filteredSessions = getFilteredSessions();
     const todaySessions = filteredSessions.filter(s => s.date === today);
     const filteredSubjects = getFilteredSubjects();
@@ -145,13 +146,13 @@ const Statistics = () => {
     const filteredSessions = getFilteredSessions();
 
     const weekSessions = filteredSessions.filter(s => {
-      const sessionDate = new Date(s.date);
+      const sessionDate = parseLocalDate(s.date);
       return sessionDate >= weekStart && sessionDate <= weekEnd;
     });
 
     const dayMap = new Map();
     weekSessions.forEach(session => {
-      const day = format(new Date(session.date), 'EEE');
+      const day = format(parseLocalDate(session.date), 'EEE');
       const current = dayMap.get(day) || 0;
       dayMap.set(day, current + Math.floor(session.duration / 60));
     });
@@ -170,13 +171,13 @@ const Statistics = () => {
     const filteredSessions = getFilteredSessions();
 
     const monthSessions = filteredSessions.filter(s => {
-      const sessionDate = new Date(s.date);
+      const sessionDate = parseLocalDate(s.date);
       return sessionDate >= monthStart && sessionDate <= monthEnd;
     });
 
     const weekMap = new Map();
     monthSessions.forEach(session => {
-      const sessionDate = new Date(session.date);
+      const sessionDate = parseLocalDate(session.date);
       const weekNum = Math.ceil(sessionDate.getDate() / 7);
       const weekLabel = `Week ${weekNum}`;
       const current = weekMap.get(weekLabel) || 0;

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { todayLocal } from "@/lib/localDate";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -452,7 +453,7 @@ const Profile = () => {
                         type="date"
                         value={profile.birthday || ""}
                         onChange={(e) => handleBirthdayChange(e.target.value)}
-                        max={new Date().toISOString().split('T')[0]}
+                        max={todayLocal()}
                       />
                     </div>
                   </div>

@@ -22,6 +22,21 @@ jobs:
       - run: npm test
       - run: npm run build
 
+  # Fails the build if a production dependency has a CRITICAL advisory. The level is "critical",
+  # not "high", because two advisories are deferred for written reasons (zod, react-router; see
+  # docs/DECISIONS.md D14). Raise the level to "high" once both are upgraded. Dev-only packages
+  # are excluded: they are never shipped to students.
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm audit --omit=dev --audit-level=critical
+
   # Separate job so lint results are visible on their own. Lint currently fails on the
   # no-explicit-any rule (101 errors, docs/DECISIONS.md D3); that is a known, tracked gap.
   lint:

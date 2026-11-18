@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { computeStreak, todayLocal } from "@/lib/localDate";
 import { toast } from "sonner";
 
 export type BadgeType = 
@@ -145,27 +146,8 @@ async function checkStudyStreaks(userId: string) {
     // Get unique dates
     const uniqueDates = [...new Set(sessions.map(s => s.date))].sort().reverse();
     
-    // Calculate current streak
-    let streak = 0;
-    const today = new Date().toISOString().split('T')[0];
-    let checkDate = new Date(today);
-
-    for (let i = 0; i < uniqueDates.length; i++) {
-      const sessionDate = uniqueDates[i];
-      const expectedDate = checkDate.toISOString().split('T')[0];
-
-      if (sessionDate === expectedDate) {
-        streak++;
-        checkDate.setDate(checkDate.getDate() - 1);
-      } else if (i === 0 && sessionDate === new Date(Date.now() - 86400000).toISOString().split('T')[0]) {
-        // Allow for yesterday if today hasn't been done yet
-        streak++;
-        checkDate = new Date(sessionDate);
-        checkDate.setDate(checkDate.getDate() - 1);
-      } else {
-        break;
-      }
-    }
+    // Current streak, counted on the student's local calendar (see src/lib/localDate.ts).
+    const streak = computeStreak(uniqueDates, todayLocal());
 
     // Award streak badges
     if (streak >= 30) {

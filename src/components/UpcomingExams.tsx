@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Plus, Edit } from "lucide-react";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
+import { daysUntil as calendarDaysUntil, parseLocalDate } from "@/lib/localDate";
 import { toast } from "sonner";
 import AddExamDialog from "./AddExamDialog";
 import EditExamDialog from "./EditExamDialog";
@@ -78,9 +79,7 @@ const UpcomingExams = ({ subjects, refreshTrigger }: UpcomingExamsProps) => {
           ) : (
             <div className="space-y-3 md:space-y-4">
               {exams.map((exam) => {
-                const daysUntil = Math.ceil(
-                  (new Date(exam.exam_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
-                );
+                const daysUntil = calendarDaysUntil(exam.exam_date);
                 return (
                   <div
                     key={exam.id}
@@ -97,7 +96,7 @@ const UpcomingExams = ({ subjects, refreshTrigger }: UpcomingExamsProps) => {
                           )}
                         </div>
                         <p className="text-xs md:text-sm text-muted-foreground mt-1">
-                          {format(new Date(exam.exam_date), "MMM dd, yyyy")}
+                          {format(parseLocalDate(exam.exam_date), "MMM dd, yyyy")}
                         </p>
                       </div>
                       <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">

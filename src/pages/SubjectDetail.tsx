@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { parseLocalDate } from "@/lib/localDate";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Plus, FileText, Link as LinkIcon, Video, FileType, FolderPlus } from "lucide-react";
@@ -244,7 +245,7 @@ const SubjectDetail = () => {
           </div>
           {subject?.exam_date && (
             <p className="text-sm md:text-base text-muted-foreground">
-              Exam: {new Date(subject.exam_date).toLocaleDateString()}
+              Exam: {parseLocalDate(subject.exam_date).toLocaleDateString()}
             </p>
           )}
         </div>

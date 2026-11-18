@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Calendar, FileText, Trash2, Edit, CheckCircle, PlusCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { daysUntil, parseLocalDate } from "@/lib/localDate";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import {
@@ -89,7 +90,7 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
   };
 
   const daysUntilExam = subject.exam_date
-    ? Math.ceil((new Date(subject.exam_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+    ? daysUntil(subject.exam_date)
     : null;
 
   const isExamPassed = daysUntilExam !== null && daysUntilExam < 0;
@@ -135,7 +136,7 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
               {subject.exam_date && (
                 <CardDescription className="flex items-center gap-1 mt-2">
                   <Calendar className="h-3 w-3" />
-                  {format(new Date(subject.exam_date), "MMM dd, yyyy")}
+                  {format(parseLocalDate(subject.exam_date), "MMM dd, yyyy")}
                   {" • "}
                   {getExamStatus()}
                   {isExamPassed && (
@@ -216,7 +217,7 @@ const SubjectCard = ({ subject, onUpdate }: SubjectCardProps) => {
           <DialogHeader>
             <DialogTitle>Add Exam Score</DialogTitle>
             <DialogDescription>
-              Enter the score for {subject.name} exam on {subject.exam_date ? format(new Date(subject.exam_date), "MMM dd, yyyy") : ""}.
+              Enter the score for {subject.name} exam on {subject.exam_date ? format(parseLocalDate(subject.exam_date), "MMM dd, yyyy") : ""}.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">

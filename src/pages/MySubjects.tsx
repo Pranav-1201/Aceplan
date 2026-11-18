@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { parseLocalDate } from "@/lib/localDate";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -231,7 +232,7 @@ const MySubjects = () => {
         {subject.exam_date && (
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
-            <span>{format(new Date(subject.exam_date), "MMM dd, yyyy")}</span>
+            <span>{format(parseLocalDate(subject.exam_date), "MMM dd, yyyy")}</span>
           </div>
         )}
       </CardContent>

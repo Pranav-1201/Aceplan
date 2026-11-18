@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { supabase } from "@/integrations/supabase/client";
+import { parseLocalDate } from "@/lib/localDate";
 import { toast } from "sonner";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
@@ -43,7 +44,7 @@ const EditExamDialog = ({ open, onOpenChange, subjects, exam, onSuccess }: EditE
   useEffect(() => {
     if (exam && open) {
       setTitle(exam.title);
-      setExamDate(new Date(exam.exam_date));
+      setExamDate(parseLocalDate(exam.exam_date));
       setScore(exam.score?.toString() || "");
       
       // Set selected subjects from exam data

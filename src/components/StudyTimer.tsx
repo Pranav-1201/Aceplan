@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Timer, Play, Pause, RotateCcw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { todayLocal } from "@/lib/localDate";
 import { toast } from "sonner";
 import { checkStudySessionBadges } from "@/lib/badgeUtils";
 
@@ -63,7 +64,7 @@ const StudyTimer = ({ subjects }: StudyTimerProps) => {
             user_id: user.id,
             subject_id: subjectId,
             duration: currentSeconds,
-            date: new Date().toISOString().split('T')[0],
+            date: todayLocal(),
             notes: `[IN PROGRESS] ${selectedSubject?.name || 'subject'} - Auto-backup`,
           }).select().single();
 
@@ -161,7 +162,7 @@ const StudyTimer = ({ subjects }: StudyTimerProps) => {
             user_id: user.id,
             subject_id: selectedSubjectId,
             duration: seconds,
-            date: new Date().toISOString().split('T')[0],
+            date: todayLocal(),
             notes: `Study session for ${selectedSubject?.name || 'subject'}`,
           });
 

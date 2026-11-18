@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Calendar, Clock, FileText, Sparkles, TrendingUp, Users } from "lucide-react";
+import { BookOpen, Calendar, Clock, FileText, Sparkles } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import heroImage from "@/assets/hero-image.jpg";
 
@@ -45,7 +45,7 @@ const Index = () => {
               
               <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl">
                 Your all-in-one study management platform. Organize materials, track time, 
-                manage your timetable, and ace your exams with intelligent insights.
+                manage your timetable, and keep your exam dates in one place.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4">
@@ -67,19 +67,6 @@ const Index = () => {
                 </Button>
               </div>
 
-              <div className="flex items-center space-x-6 pt-4">
-                <div className="flex -space-x-2">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div
-                      key={i}
-                      className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-accent border-2 border-background"
-                    />
-                  ))}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  <span className="font-semibold text-foreground">10,000+</span> students already excelling
-                </div>
-              </div>
             </div>
 
             <div className="relative lg:block animate-fade-in animation-delay-200">
@@ -89,17 +76,6 @@ const Index = () => {
                 alt="Study management dashboard showing organized timetable, subjects, and study materials"
                 className="relative rounded-3xl shadow-2xl border border-border/50 hover:scale-[1.02] transition-transform duration-500"
               />
-              
-              {/* Floating cards */}
-              <div className="absolute -top-4 -right-4 bg-card border border-border rounded-xl p-4 shadow-lg animate-float">
-                <TrendingUp className="h-6 w-6 text-accent mb-2" />
-                <div className="text-sm font-semibold">95% Success Rate</div>
-              </div>
-              
-              <div className="absolute -bottom-4 -left-4 bg-card border border-border rounded-xl p-4 shadow-lg animate-float animation-delay-500">
-                <Users className="h-6 w-6 text-primary mb-2" />
-                <div className="text-sm font-semibold">Join 10k+ Students</div>
-              </div>
             </div>
           </div>
         </div>
@@ -132,14 +108,14 @@ const Index = () => {
               {
                 icon: Calendar,
                 title: "Track Exam Dates",
-                description: "Never miss an exam with our smart calendar system and reminders",
+                description: "Keep every exam and its date in one place, next to the subject it belongs to",
                 color: "accent",
                 delay: "100"
               },
               {
                 icon: FileText,
                 title: "Manage Materials",
-                description: "Store notes, PDFs, videos, and links all in one searchable place",
+                description: "Store notes, PDFs, videos, and links under the subject they belong to",
                 color: "primary",
                 delay: "200"
               },
@@ -183,7 +159,7 @@ const Index = () => {
                 Ready to Transform Your Study Habits?
               </h2>
               <p className="text-lg sm:text-xl text-white/90">
-                Join thousands of students who are already achieving their academic goals with AcePlan
+                Plan your semester, track your study time and keep your exams in view with AcePlan
               </p>
               <Button
                 size="lg"
@@ -210,7 +186,7 @@ const Index = () => {
               <span className="font-semibold">AcePlan</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              © 2025 AcePlan. Empowering students worldwide.
+              © {new Date().getFullYear()} AcePlan
             </p>
           </div>
         </div>
